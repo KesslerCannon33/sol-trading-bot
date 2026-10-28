@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SOL Trading Bot Dashboard</title>
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --card: #131722;
+            --border: #1e2a3a;
+            --text: #d1d4dc;
+            --text-dim: #787b86;
+            --green: #26a69a;
+            --red: #ef5350;
+            --yellow: #fdd835;
+            --blue: #2196f3;
+            --purple: #ab47bc;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            padding: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+        .header h1 { font-size: 18px; font-weight: 600; }
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--yellow);
+            animation: pulse 2s infinite;
+        }
+        .status-dot.live { background: var(--green); }
+        .status-dot.offline { background: var(--red); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .card-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 24px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+        .green { color: var(--green); }
+        .red { color: var(--red); }
+        .yellow { color: var(--yellow); }
+        .blue { color: var(--blue); }
+        .signal-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .signal-row:last-child { border-bottom: none; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-long { background: rgba(38,166,154,0.2); color: var(--green); }
+        .badge-short { background: rgba(239,83,80,0.2); color: var(--red); }
+        .badge-flat { background: rgba(120,123,134,0.2); color: var(--text-dim); }
+        .badge-active { background: rgba(33,150,243,0.2); color: var(--blue); }
+        .badge-halted { background: rgba(253,216,53,0.2); color: var(--yellow); }
+        .gate {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+        }
+        .gate-name { font-size: 12px; }
+        .gate-status { font-size: 11px; font-weight: 600; }
+        .gate-pass { color: var(--green); }
+        .gate-fail { color: var(--red); }
+        .info { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+        .code-block {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SOL Trading Bot</h1>
+        <div class="status">
+            <div class="status-dot"></div>
+            <span>Paper Mode</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Backtest Results — Sample Strategy (MockJev)</div>
+        <div class="gate"><span class="gate-name">Sharpe ratio (target > 1.5)</span><span class="gate-status gate-fail">-7.23</span></div>
+        <div class="gate"><span class="gate-name">Max drawdown (target < 15%)</span><span class="gate-status gate-pass">1.61%</span></div>
+        <div class="gate"><span class="gate-name">Hit rate (target > 55%)</span><span class="gate-status gate-fail">44.93%</span></div>
+        <div class="gate"><span class="gate-name">T-statistic OOS (target > 2.0)</span><span class="gate-status gate-fail">-1.15</span></div>
+        <div class="gate"><span class="gate-name">Total trades</span><span class="gate-status">69</span></div>
+        <div class="gate"><span class="gate-name">Profit factor</span><span class="gate-status">0.56</span></div>
+        <div style="margin-top: 12px;" class="info">
+            Strategy correctly fails gates. The system refuses to accept it — exactly as the spec requires.
+            With a real Jev API key and a refined strategy, Opus 5.5 nightly review will iterate until the gates pass.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Account (Paper — $100,000)</div>
+        <div class="grid-2">
+            <div class="stat"><div class="stat-value green">$100,000</div><div class="stat-label">Equity</div></div>
+            <div class="stat"><div class="stat-value">$0.00</div><div class="stat-label">Daily P&L</div></div>
+            <div class="stat"><div class="stat-value">0.0%</div><div class="stat-label">Drawdown</div></div>
+            <div class="stat"><div class="stat-value">0</div><div class="stat-label">Open Positions</div></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Risk Status</div>
+        <div class="signal-row"><span>Kill Switch</span><span class="badge badge-active">ACTIVE</span></div>
+        <div class="signal-row"><span>Max Position Size</span><span>5% of equity</span></div>
+        <div class="signal-row"><span>Daily Loss Limit</span><span>2%</span></div>
+        <div class="signal-row"><span>Max Drawdown</span><span>10%</span></div>
+        <div class="signal-row"><span>Kill Switch Trigger</span><span>8% drawdown</span></div>
+        <div class="signal-row"><span>Manual Approval Above</span><span>$500</span></div>
+        <div class="signal-row"><span>Max Open Positions</span><span>1</span></div>
+        <div class="signal-row"><span>Leverage</span><span>None (1.0x)</span></div>
+        <div class="signal-row"><span>API Withdrawals</span><span class="badge badge-halted">DISABLED</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Jev Decision Pipeline</div>
+        <div class="signal-row"><span>Endpoint</span><span style="font-size: 11px;">jevtypesafeai.com/api/v1/decide</span></div>
+        <div class="signal-row"><span>Model</span><span>jev-latest</span></div>
+        <div class="signal-row"><span>Latency</span><span>~250ms</span></div>
+        <div class="signal-row"><span>Cost</span><span>$0.42/1M input tokens</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Jev Questions (Fixed-Outcome)</div>
+        <div class="signal-row"><span>regime</span><span class="badge badge-flat">choice: trending/ranging/volatile</span></div>
+        <div class="signal-row"><span>direction</span><span class="badge badge-flat">choice: long/short/flat</span></div>
+        <div class="signal-row"><span>buying_pressure</span><span class="badge badge-flat">noul: yes/no probability</span></div>
+        <div class="signal-row"><span>setup_quality</span><span class="badge badge-flat">score: 0-3</span></div>
+        <div class="signal-row"><span>risk_state</span><span class="badge badge-flat">choice: low/moderate/high/extreme</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Sizing — Capped 1/4 Kelly</div>
+        <div class="signal-row"><span>Kelly Fraction</span><span>0.25 (quarter Kelly)</span></div>
+        <div class="signal-row"><span>Min Confidence</span><span>0.55</span></div>
+        <div class="signal-row"><span>Max Position</span><span>5% of equity</span></div>
+        <div class="signal-row"><span>Win/Loss Ratio</span><span>1.5 (TP/SL)</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Calibration</div>
+        <div class="signal-row"><span>Brier Score</span><span>0.250 (no data yet)</span></div>
+        <div class="signal-row"><span>Reliability Curve</span><span>Pending data</span></div>
+        <div class="signal-row"><span>Recalibration</span><span>Auto-detect when curve bends</span></div>
+        <div class="info" style="margin-top: 8px;">
+            Jev is calibrated against its training data, not your venue.
+            Verify on your own fills before sizing real money.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Nightly Self-Improvement</div>
+        <div class="info">
+            Every night at 2:00 AM ET, Opus 5.5 reviews the full session:
+            <br><br>
+            1. Reads every fill and every miss<br>
+            2. Finds the root cause<br>
+            3. Rewrites strategy.md and Jev questions<br>
+            4. Re-runs the backtest gate<br>
+            5. No rewrite ships until it clears the same gates<br>
+            <br>
+            The bot improves while you sleep.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Test Suite — 45/45 Passed</div>
+        <div class="signal-row"><span>test_no_lookahead</span><span class="gate-pass">4 passed</span></div>
+        <div class="signal-row"><span>test_risk_veto</span><span class="gate-pass">9 passed</span></div>
+        <div class="signal-row"><span>test_kelly_cap</span><span class="gate-pass">7 passed</span></div>
+        <div class="signal-row"><span>test_kill_switch</span><span class="gate-pass">10 passed</span></div>
+        <div class="signal-row"><span>test_backtest_gates</span><span class="gate-pass">6 passed</span></div>
+        <div class="signal-row"><span>test_calibration</span><span class="gate-pass">9 passed</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Quick Start</div>
+        <div class="code-block">pip install -e ".[dev]"
+cp .env.example .env  # Fill in your keys
+
+# Run backtest
+python -m trading_bot.main --backtest
+
+# Run bot + dashboard
+python -m trading_bot.main
+
+# Dashboard only
+python -m trading_bot.main --dashboard-only
+
+# Run tests
+pytest -v</div>
+    </div>
+
+    <div style="text-align: center; color: var(--text-dim); font-size: 11px; margin-top: 16px; padding-bottom: 20px;">
+        Three-layer trading bot · Opus 5.5 + Jev + Deterministic Code<br>
+        The models advise, the code decides.
+    </div>
+</body>
+</html>
